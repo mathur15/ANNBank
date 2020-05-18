@@ -42,6 +42,7 @@ classifier = Sequential()
 #rectifier function for input layers
 #sigmoid function for output layer
 #for hidden layer (after the input layer)
+#6 = (11+1)/2
 classifier.add(Dense(output_dim=6,init='uniform',activation='relu',input_dim=11))
 classifier.add(Dense(output_dim=6,init='uniform',activation='relu'))
 
@@ -54,5 +55,17 @@ classifier.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accurac
 
 classifier.fit(X_train,y_train,batch_size=10,epochs=100)
 
+y_pred = classifier.predict(X_test)
+#Now y_pred is in terms of true and false
+y_pred = (y_pred > 0.5)
+
+#Validate
+from sklearn.metrics import confusion_matrix
+cm = confusion_matrix(y_test, y_pred)
+
+#test on a single row- create a new entry and use dataset to encode value for country and gender
+#scale since test and train was scaled.
+test_prediction = classifier.predict(scalar.transform(np.array([[0,0,600,1,40,3,60000,2,1,1,50000]])))
+test_prediction = (test_prediction > 0.5)
 
 
