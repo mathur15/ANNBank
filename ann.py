@@ -7,10 +7,12 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
+from sklearn.model_selection import cross_val_score
 
 import keras
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.wrappers.scikit_learn import KerasClassifier
 
 dataset = pd.read_csv('Churn_Modelling.csv')
 
@@ -68,4 +70,17 @@ cm = confusion_matrix(y_test, y_pred)
 test_prediction = classifier.predict(scalar.transform(np.array([[0,0,600,1,40,3,60000,2,1,1,50000]])))
 test_prediction = (test_prediction > 0.5)
 
+#use cross val score for further evaluation using kerasclassifier
+def create_model():
+    classifier = Sequential()
+    classifier.add(Dense(output_dim=6,init='uniform',activation='relu',input_dim=11))
+    classifier.add(Dense(output_dim=6,init='uniform',activation='relu'))
+    classifier.add(Dense(output_dim=1,init='uniform',activation='sigmoid'))
+    classifier.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
+    return classifier
 
+classfier = KerasClassifier(build_fn=create_model,epochs=100,batch_size=10)
+results = cross_val_score(classifier,X_test,y_test,cv=10)
+
+accuracy_mean = results.mean()
+accuracy_varience = results.std()
