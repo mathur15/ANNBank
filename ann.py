@@ -29,11 +29,13 @@ labelEndcode2 = LabelEncoder()
 X[:,2] = labelEndcode2.fit_transform(X[:,2])
 
 #OneHot encode countries using ColumnTransformer
-ct = ColumnTransformer ([('one_hot_encoder', OneHotEncoder(categories='auto'), [1])], remainder = 'passthrough')
+ct = ColumnTransformer ([('one_hot_encoder', OneHotEncoder(categories='auto'),
+                          [1])], remainder = 'passthrough')
 X = ct.fit_transform(X)
 X = X[:,1:]
 
-X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,random_state = 42)
+X_train,X_test,y_train,y_test = train_test_split(X,y,test_size=0.2,
+                                                 random_state = 42)
 
 scalar = StandardScaler()
 X_train = scalar.fit_transform(X_train)
@@ -45,7 +47,8 @@ classifier = Sequential()
 #sigmoid function for output layer
 #for hidden layer (after the input layer)
 #6 = (11+1)/2
-classifier.add(Dense(output_dim=6,init='uniform',activation='relu',input_dim=11))
+classifier.add(Dense(output_dim=6,init='uniform',activation='relu',
+                     input_dim=11))
 classifier.add(Dense(output_dim=6,init='uniform',activation='relu'))
 
 #output layer 
@@ -53,7 +56,8 @@ classifier.add(Dense(output_dim=6,init='uniform',activation='relu'))
 classifier.add(Dense(output_dim=1,init='uniform',activation='sigmoid'))
 
 #compiling the ANN using stochastic gradient descent
-classifier.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
+classifier.compile(optimizer='adam',loss='binary_crossentropy'
+                   ,metrics=['accuracy'])
 
 classifier.fit(X_train,y_train,batch_size=10,epochs=100)
 
@@ -65,22 +69,29 @@ y_pred = (y_pred > 0.5)
 from sklearn.metrics import confusion_matrix
 cm = confusion_matrix(y_test, y_pred)
 
-#test on a single row- create a new entry and use dataset to encode value for country and gender
+#test on a single row- create a new entry and use dataset to encode value for 
+#country and gender
 #scale since test and train was scaled.
-test_prediction = classifier.predict(scalar.transform(np.array([[0,0,600,1,40,3,60000,2,1,1,50000]])))
+test_prediction = classifier.predict(scalar.transform(np.array([[0,0,600,1,40,3
+                                                        ,60000,2,1,1,50000]])))
 test_prediction = (test_prediction > 0.5)
 
 #use cross val score for further evaluation using kerasclassifier
 def create_model():
     classifier = Sequential()
-    classifier.add(Dense(output_dim=6,init='uniform',activation='relu',input_dim=11))
+    classifier.add(Dense(output_dim=6,init='uniform',activation='relu',
+                         input_dim=11))
     classifier.add(Dense(output_dim=6,init='uniform',activation='relu'))
     classifier.add(Dense(output_dim=1,init='uniform',activation='sigmoid'))
-    classifier.compile(optimizer='adam',loss='binary_crossentropy',metrics=['accuracy'])
+    classifier.compile(optimizer='adam',loss='binary_crossentropy'
+                       ,metrics=['accuracy'])
     return classifier
 
-classfier = KerasClassifier(build_fn=create_model,epochs=100,batch_size=10)
-results = cross_val_score(classifier,X_test,y_test,cv=10)
+classifier = KerasClassifier(build_fn=create_model,epochs=100,batch_size=10)
+results = cross_val_score(estimator=classifier,X=X_test,y=y_test,cv=10,
+                          n_jobs=-1)
 
 accuracy_mean = results.mean()
+print(accuracy_mean)
 accuracy_varience = results.std()
+print(accuracy_varience)
