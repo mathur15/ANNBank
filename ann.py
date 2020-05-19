@@ -7,7 +7,7 @@ from sklearn.preprocessing import LabelEncoder, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
-from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_score, GridSearchCV
 
 import keras
 from keras.models import Sequential
@@ -96,6 +96,27 @@ results = cross_val_score(estimator=classifier,X=X_test,y=y_test,cv=10,
                           n_jobs=-1)
 
 accuracy_mean = results.mean()
-print(accuracy_mean)
+#print(accuracy_mean)
 accuracy_varience = results.std()
-print(accuracy_varience)
+#print(accuracy_varience)
+
+#GridSearchCV
+def create_model_CV(optimizer):
+    classifier = Sequential()
+    classifier.add(Dense(output_dim=6,init='uniform',activation='relu',
+                         input_dim=11))
+    classifier.add(Dense(output_dim=6,init='uniform',activation='relu'))
+    classifier.add(Dense(output_dim=1,init='uniform',activation='sigmoid'))
+    classifier.compile(optimizer=optimizer,loss='binary_crossentropy'
+                       ,metrics=['accuracy'])
+    return classifier
+classifier = KerasClassifier(build_fn=create_model_CV)
+parameter = {'batch_size':[25,32],'epochs':[100,500],
+             'optimizer':['adam','rmsprop']}
+grid_search=GridSearchCV(estimator = classifier, param_grid = parameter,
+                         scoring='accuracy',cv=10)
+grid_search=grid_search.fit(X_train,y_train)
+#best parameters
+best_param = grid_search.best_params_
+#best accuracy
+best_accuracy = grid_search.best_score_
