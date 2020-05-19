@@ -11,7 +11,7 @@ from sklearn.model_selection import cross_val_score
 
 import keras
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense,Dropout
 from keras.wrappers.scikit_learn import KerasClassifier
 
 dataset = pd.read_csv('Churn_Modelling.csv')
@@ -49,7 +49,11 @@ classifier = Sequential()
 #6 = (11+1)/2
 classifier.add(Dense(output_dim=6,init='uniform',activation='relu',
                      input_dim=11))
+#To counter overfitting add a dropout layer- proportion of neurons to disable
+#classifier.add(Dropout(p=0.1))
+
 classifier.add(Dense(output_dim=6,init='uniform',activation='relu'))
+#classifier.add(Dropout(p=0.1))
 
 #output layer 
 #note:softmax for dependant variable with more than 2 categories
