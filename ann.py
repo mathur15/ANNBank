@@ -111,8 +111,8 @@ def create_model_CV(optimizer):
                        ,metrics=['accuracy'])
     return classifier
 classifier = KerasClassifier(build_fn=create_model_CV)
-parameter = {'batch_size':[25,32],'epochs':[100,500],
-             'optimizer':['adam','rmsprop']}
+parameter = {'batch_size':[25,32,40],'epochs':[1000,1500,2000],
+             'optimizer':['adam','rmsprop','SGD']}
 grid_search=GridSearchCV(estimator = classifier, param_grid = parameter,
                          scoring='accuracy',cv=10)
 grid_search=grid_search.fit(X_train,y_train)
