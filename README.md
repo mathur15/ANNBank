@@ -12,4 +12,4 @@ Data was normalized using StandardScalar.
         2. The second metric considered was using cross validation and divide the data into 10 folds. 
         3. The third metric to further optimize the model was Grid Search. 
             i. The combination of hyperparameters that were considered were optimizers, batch size and loss functions.
-            ii. It was observed that an accuracy of 85% percent was achieved using the adam optimizer with a batch size of 40. 
+            ii. It was observed that an accuracy of 85% was achieved using the adam optimizer with a batch size of 40. 
